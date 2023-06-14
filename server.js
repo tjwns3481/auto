@@ -49,10 +49,7 @@ const upload = multer({
   }),
 });
 
-// app.post("/upload", upload.fields([{ name: "image" }, { name: "image2" }, { name: "image3" }]), (req, res) => {
-// app.post("/upload", upload.single("image1"), (req, res) => {
 app.post("/upload", upload.array("image", 3), (req, res) => {
-  // console.log(req.files);
   // Generate the new HTML file with the image tag
   const newHtml = `
   <!DOCTYPE html>
