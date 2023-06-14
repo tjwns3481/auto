@@ -3,8 +3,9 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 const fs = require("fs");
+const desktopPath = path.join(require("os").homedir(), "Desktop");
 
-// set file name
+// Set file name
 const date = new Date();
 const fullYear = date.getFullYear();
 const realYear = fullYear.toString()[2] + fullYear.toString()[3];
@@ -17,36 +18,41 @@ const realDate = realYear + realMonth + realDay;
 
 app.use(express.static("public")); // Serve static files from the 'public' directory
 
-fs.mkdir(`uploads/html_${realDate}sn_app`, { recursive: true }, (err) => {
+fs.mkdir(`${desktopPath}/html_${realDate}sn_app`, { recursive: true }, (err) => {
   if (err) throw err;
 });
 
-fs.mkdir(`uploads/html_${realDate}sn_app/css`, { recursive: true }, (err) => {
+fs.mkdir(`${desktopPath}/html_${realDate}sn_app/css`, { recursive: true }, (err) => {
   if (err) throw err;
 });
 
-fs.mkdir(`uploads/html_${realDate}sn_app/images`, { recursive: true }, (err) => {
+fs.mkdir(`${desktopPath}/html_${realDate}sn_app/images`, { recursive: true }, (err) => {
   if (err) throw err;
 });
 
+fs.mkdir(`${desktopPath}/html_${realDate}sn_app/js`, { recursive: true }, (err) => {
+  if (err) throw err;
+});
+
+let extName = "";
 const upload = multer({
   storage: multer.diskStorage({
     // set a localstorage destination
     destination: (req, file, cb) => {
-      cb(null, `uploads/html_${realDate}sn_app/images`);
+      cb(null, `${desktopPath}/html_${realDate}sn_app/images`);
     },
     // convert a file name
     filename: (req, file, cb) => {
-      cb(null, "img02" + path.extname(file.originalname));
+      cb(null, "img0" + req.files.length + path.extname(file.originalname));
+      extName = path.extname(file.originalname);
     },
   }),
 });
 
-app.post("/upload", upload.single("image"), (req, res) => {
-  console.log("filepath = " + req.file.path);
-  const imagePath = req.file.path; // Path to the uploaded image
-  const imageUrl = "/" + imagePath; // Relative URL of the image
-
+// app.post("/upload", upload.fields([{ name: "image" }, { name: "image2" }, { name: "image3" }]), (req, res) => {
+// app.post("/upload", upload.single("image1"), (req, res) => {
+app.post("/upload", upload.array("image", 3), (req, res) => {
+  // console.log(req.files);
   // Generate the new HTML file with the image tag
   const newHtml = `
   <!DOCTYPE html>
@@ -62,13 +68,23 @@ app.post("/upload", upload.single("image"), (req, res) => {
   
       <link rel="stylesheet" href="./css/event.css" />
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="./js/link.js"></script>
+      <script>
+        $(document).ready(function () {
+          LinkSetting("link1", "BrowserOpen", "yes", "https://www.naver.com");
+        });
+    </script>
     </head>
     <body>
       <div class="canvas">
         <div class="container">
           <div class="eventBox">
             <div class="img_box">
-            <img src="./images/img02.jpg" alt="Uploaded Image" />
+            <img src="./images/img01${extName}" alt="Uploaded Image" />
+            <a href="#none" id="link1">
+              <img src="./images/img02${extName}" alt="Uploaded Image" />
+            </a>
+            <img src="./images/img03${extName}" alt="Uploaded Image" />
             </div>
           </div>
         </div>
@@ -101,21 +117,96 @@ app.post("/upload", upload.single("image"), (req, res) => {
   q:before, q:after {content: '';content: none;}
   table {border-collapse: collapse;border-spacing: 0;}
   .eventBox {width:100%; overflow-x:hidden;}
+  img{width:100%; display:block}
+  #link1 {display:block;}
   `;
 
+  const newJs = `function LinkSetting(obj, type, newWindow, link_val) {
+    var filter = "win16|win32|win64|mac|macintel";
+  
+    var pcweb_url = "";
+    var moweb_url = "";
+    var app_url = "";
+  
+    if (type == "coupon") {
+      pcweb_url = "https://www.lotteshopping.com/cpn/cpnDetail?cpnInfoNo=";
+      moweb_url = "https://m.lotteshopping.com/cpn/cpnDetail?cpnInfoNo=";
+      app_url = "lottecoupon://gate?page=a0026&cpnInfoNo=";
+    } else if (type == "shopping") {
+      pcweb_url =
+        "https://www.lotteshopping.com/shpgnews/shpgnewsDetail?shpgNewsNo=";
+      moweb_url =
+        "https://m.lotteshopping.com/shpgnews/shpgnewsDetail?shpgNewsNo=";
+      app_url = "lottecoupon://gate?page=a0083&shpgNewsNo=";
+    } else if (type == "saeun") {
+      pcweb_url = "https://www.lotteshopping.com/thku/thkuDetail?thkuNo=";
+      moweb_url = "https://m.lotteshopping.com/thku/thkuDetail?thkuNo=";
+      app_url = "lottecoupon://gate?page=a0065&thkuNo=";
+    } else if (type == "event") {
+      pcweb_url = "https://www.lotteshopping.com/cuterent/cuterentDetail?entNo=";
+      moweb_url = "https://m.lotteshopping.com/cuterent/cuterentDetail?entNo=";
+      app_url = "lottecoupon://gate?page=a0102&entNo=";
+    } else if (type == "magazine") {
+      pcweb_url =
+        "https://www.lotteshopping.com/magazine/magazineDetail?mazinNo=";
+      moweb_url = "https://m.lotteshopping.com/magazine/magazineDetail?mazinNo=";
+      app_url = "lottecoupon://gate?page=a0086&mazinNo=";
+    } else if (type == "BrowserOpen") {
+      pcweb_url = "";
+      moweb_url = "";
+      app_url = "toapp:::AppViewMove:::BrowserOpen:::";
+    } else if (type == "xBrowser") {
+      pcweb_url = "";
+      moweb_url = "";
+      app_url = "lottecoupon://gate?page=a0137&url=";
+    }
+  
+    if (newWindow != "yes" || newWindow != "no") {
+      newWindow = "yes";
+    }
+  
+    if (navigator.platform) {
+      if (filter.indexOf(navigator.platform.toLowerCase()) >= 0) {
+        // PCWEB 인 경우
+        $("#" + obj).prop("href", pcweb_url + link_val);
+        if (newWindow == "yes") {
+          $("#" + obj).prop("target", "_blank");
+        }
+      } else {
+        var browserInfo = navigator.userAgent;
+        var isInIFrame = window.location != window.parent.location;
+  
+        if (
+          browserInfo.indexOf("LD_Android") > -1 ||
+          browserInfo.indexOf("LD_iOS") > -1
+        ) {
+          // 앱 링크
+          $("#" + obj).prop("href", app_url + link_val);
+        } else {
+          // 모바일 웹 링크
+          $("#" + obj).prop("href", moweb_url + link_val);
+          if (newWindow == "yes") {
+            $("#" + obj).prop("target", "_blank");
+          }
+        }
+      }
+    }
+  }
+  `;
   // Write the new HTML file
 
-  fs.writeFile(`uploads/html_${realDate}sn_app/index_app.html`, newHtml, (err) => {
+  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/index_app.html`, newHtml, (err) => {
     if (err) {
-      // console.err;
+      console.err;
     } else {
-      return res.send("HTML file generated successfully");
+      return res.send(`파일 생성이 완료되었습니다.
+      ${desktopPath}
+      를 확인해주세요.`);
     }
   });
 
   // Write the new CSS file
-
-  fs.writeFile(`uploads/html_${realDate}sn_app/css/event.css`, newCss, (err) => {
+  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/css/event.css`, newCss, (err) => {
     if (err) {
       console.err;
     } else {
@@ -123,27 +214,14 @@ app.post("/upload", upload.single("image"), (req, res) => {
     }
   });
 
-  fs.opendir(
-    // Path of the directory
-    `${__dirname}`,
-
-    // Options for modifying the operation
-    { encoding: "utf8", bufferSize: 64 },
-
-    // Callback with the error and returned
-    // directory
-    (err, dir) => {
-      if (err) console.log("Error:", err);
-      else {
-        // Print the pathname of the directory
-        console.log("Path of the directory:", dir.path);
-
-        // Close the directory
-        console.log("Closing the directory");
-        dir.closeSync();
-      }
+  // Write the new JS file
+  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/js/link.js`, newJs, (err) => {
+    if (err) {
+      console.err;
+    } else {
+      return;
     }
-  );
+  });
 });
 
 app.listen(8080, () => {
