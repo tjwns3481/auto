@@ -65,6 +65,36 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
   
       <link rel="stylesheet" href="./css/event.css" />
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </script>
+    </head>
+    <body>
+      <div class="canvas">
+        <div class="container">
+          <div class="eventBox">
+            <div class="img_box">
+              <img src="./images/img01${extName}" alt="Uploaded Image" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  `;
+
+  const newHtml2 = `
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"
+      />
+      <meta name="format-detection" content="telephone=no" />
+      <title>이벤트</title>
+  
+      <link rel="stylesheet" href="./css/event.css" />
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
       <script src="./js/link.js"></script>
       <script>
         $(document).ready(function () {
@@ -77,11 +107,13 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
         <div class="container">
           <div class="eventBox">
             <div class="img_box">
-            <img src="./images/img01${extName}" alt="Uploaded Image" />
-            <a href="#none" id="link1">
-              <img src="./images/img02${extName}" alt="Uploaded Image" />
-            </a>
-            <img src="./images/img03${extName}" alt="Uploaded Image" />
+              <img src="./images/img01${extName}" alt="Uploaded Image" />
+
+              <a href="#none" id="link1">
+                <img src="./images/img02${extName}" alt="Uploaded Image" />
+              </a>
+              
+              <img src="./images/img03${extName}" alt="Uploaded Image" />
             </div>
           </div>
         </div>
@@ -190,15 +222,15 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
     }
   }
   `;
+
   // Write the new HTML file
 
-  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/index_app.html`, newHtml, (err) => {
+  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/index_app.html`, newHtml2, (err) => {
     if (err) {
       console.err;
     } else {
-      return res.send(`파일 생성이 완료되었습니다.
-      ${desktopPath}
-      를 확인해주세요.`);
+      return res.send(`파일 생성이 완료되었습니다.<br/>
+      저장된 경로 : ${desktopPath}(바탕화면)`);
     }
   });
 
