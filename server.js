@@ -3,7 +3,7 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const desktopPath = path.join(require("os").homedir(), "Desktop");
+const desktopPath = path.join(__dirname + "/Desktop");
 
 // Set file name
 const date = new Date();
@@ -19,6 +19,8 @@ const realDate = realYear + realMonth + realDay;
 app.use(express.static(__dirname + "/public")); // Serve static files from the 'public' directory
 
 app.get("/mkdir", (req, res, next) => {
+  console.log(`desktopPath = ${desktopPath}`);
+
   // Set ready dir
   fs.mkdir(`${desktopPath}/html_${realDate}sn_app`, { recursive: true }, (err) => {
     if (err) throw err;
