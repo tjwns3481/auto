@@ -3,10 +3,10 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const desktopPath = process.env.HOME;
+const desktopPath = "C:\\Users"
 const rootDir = path.resolve(__dirname);
 const publicDir = path.join(rootDir, "public");
-
+const Cdrive = "C:\\Users"
 
 // Set file name
 const date = new Date();
@@ -215,6 +215,8 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
       return res.send(`파일 생성이 완료되었습니다.<br/>
       rootDir = ${rootDir}<br/>
       publicDir = ${publicDir}<br/>
+      c = ${Cdrive}<br/>
+      root = ${root}<br/>
       desktopPath : ${desktopPath}`);
     }
   });
