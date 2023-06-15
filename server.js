@@ -4,6 +4,9 @@ const app = express();
 const path = require("path");
 const fs = require("fs");
 const desktopPath = process.env.HOME;
+const rootDir = path.resolve(__dirname);
+const publicDir = path.join(rootDir, "public");
+
 
 // Set file name
 const date = new Date();
@@ -210,7 +213,9 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
       console.err;
     } else {
       return res.send(`파일 생성이 완료되었습니다.<br/>
-      저장된 경로 : ${desktopPath}(바탕화면)`);
+      rootDir = ${rootDir}<br/>
+      publicDir = ${publicDir}<br/>
+      desktopPath : ${desktopPath}`);
     }
   });
 
