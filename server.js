@@ -3,7 +3,7 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const desktopPath = path.join(__dirname + "/Desktop");
+const desktopPath = process.env.HOME;
 
 // Set file name
 const date = new Date();
