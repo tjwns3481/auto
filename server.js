@@ -216,7 +216,6 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
       rootDir = ${rootDir}<br/>
       publicDir = ${publicDir}<br/>
       c = ${Cdrive}<br/>
-      root = ${root}<br/>
       desktopPath : ${desktopPath}`);
     }
   });
