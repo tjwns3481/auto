@@ -3,10 +3,8 @@ const multer = require("multer");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const desktopPath = "C:\\Users"
-const rootDir = path.resolve(__dirname);
-const publicDir = path.join(rootDir, "public");
-const Cdrive = "C:\\Users"
+const archiver = require("archiver"); //이거 바꿔야하고
+const desktopPath = path.join(__dirname + "/uploads"); //이거 바꿔야하고
 
 // Set file name
 const date = new Date();
@@ -212,11 +210,7 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
     if (err) {
       console.err;
     } else {
-      return res.send(`파일 생성이 완료되었습니다.<br/>
-      rootDir = ${rootDir}<br/>
-      publicDir = ${publicDir}<br/>
-      c = ${Cdrive}<br/>
-      desktopPath : ${desktopPath}`);
+      return;
     }
   });
 
@@ -237,6 +231,36 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
       return;
     }
   });
+
+  //여기 부터
+  const folderPath = path.join(desktopPath + `/html_${realDate}sn_app`);
+
+  if (!fs.existsSync(folderPath)) {
+    return res.status(404).send("Folder not Found");
+  }
+
+  const archive = archiver("zip", {
+    zlib: { level: 9 },
+  });
+
+  archive.on("error", (err) => {
+    res.status(500).send({ error: err.message });
+  });
+
+  archive.on("end", () => {
+    console.log("Arcive created successfully");
+    res.end();
+  });
+
+  res.attachment(`html_${realDate}sn_app.zip`);
+  res.setHeader("Content-Type", "application/zip");
+
+  archive.pipe(res);
+
+  archive.directory(folderPath, false);
+
+  archive.finalize();
+  //여기까지
 });
 
 app.listen(process.env.PORT, () => {
