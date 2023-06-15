@@ -6,20 +6,59 @@
   </head>
   <body>
     <h1>HTML 생성기</h1>
+
+    <span style="display: block; margin-bottom: 5vw; color: red; text-align: center"
+      >폴더를 먼저 생성해주시고 이미지를 선택해주세요.</span
+    >
+    <button
+      style="
+        font-family: 'paybooc-Light', sans-serif;
+        display: inline-block;
+        margin-bottom: 4vw;
+        background-color: aliceblue;
+        padding: 2vw;
+        border-radius: 2vw;
+        color: #1e6b7b;
+        border: 1px solid;
+      "
+    >
+      <a href="/mkdir" style="text-decoration: none">폴더 생성하기</a>
+    </button>
     <form action="/upload" method="post" enctype="multipart/form-data" style="margin-bottom: 10vw">
       <h3>상단이미지</h3>
-      <input class="pick1" type="file" name="image" style="display: block; margin-bottom: 5vw" />
+      <input class="pick1" type="file" name="image" style="display: inline-block; margin-bottom: 4vw" />
 
       <div style="display: block; margin-bottom: 3vw">
         <h3>링크</h3>
-        <input id="link-type" type="text" placeholder="링크타입을 적어주세요" name="linkType" />
-        <input id="link-url" type="text" placeholder="url을 적어주세요" name="url" />
+        <select id="link-type" name="linkType">
+          <option value="BrowserOpen">BrowserOpen</option>
+          <option value="xBrowser">xBrowser</option>
+          <option value="shopping">ShoppingNews</option>
+          <option value="event">Event</option>
+          <option value="coupon">Coupon</option>
+          <option value="saeun">Saeun</option>
+        </select>
+        <input id="link-url" type="text" placeholder="url을 적어주세요" name="linkUrl" />
         <input class="pick2" type="file" name="image" style="display: block; margin-bottom: 5vw" />
       </div>
 
       <h3>하단이미지</h3>
       <input class="pick3" type="file" name="image" style="display: block; margin-bottom: 5vw" />
-      <input class="upload" type="submit" value="업로드" />
+      <input
+        class="upload"
+        type="submit"
+        value="업로드"
+        style="
+          font-family: 'paybooc-Light', sans-serif;
+          display: inline-block;
+          margin-bottom: 4vw;
+          background-color: aliceblue;
+          padding: 2vw;
+          border-radius: 2vw;
+          color: #1e6b7b;
+          border: 1px solid;
+        "
+      />
     </form>
 
     <h3>미리보기</h3>

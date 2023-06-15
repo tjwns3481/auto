@@ -16,72 +16,50 @@ const realDay = day.toString();
 month < 10 ? (realMonth = "0" + month.toString()) : (realMonth = month.toString());
 const realDate = realYear + realMonth + realDay;
 
-app.use(express.static("public")); // Serve static files from the 'public' directory
+app.use(express.static(__dirname + "/public")); // Serve static files from the 'public' directory
 
-fs.mkdir(`${desktopPath}/html_${realDate}sn_app`, { recursive: true }, (err) => {
-  if (err) throw err;
+app.get("/mkdir", (req, res, next) => {
+  // Set ready dir
+  fs.mkdir(`${desktopPath}/html_${realDate}sn_app`, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+
+  fs.mkdir(`${desktopPath}/html_${realDate}sn_app/css`, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+
+  fs.mkdir(`${desktopPath}/html_${realDate}sn_app/images`, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+
+  fs.mkdir(`${desktopPath}/html_${realDate}sn_app/js`, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
+  res.sendFile(path.join(__dirname + "/public/index.html"));
 });
 
-fs.mkdir(`${desktopPath}/html_${realDate}sn_app/css`, { recursive: true }, (err) => {
-  if (err) throw err;
-});
+let extName = [];
 
-fs.mkdir(`${desktopPath}/html_${realDate}sn_app/images`, { recursive: true }, (err) => {
-  if (err) throw err;
-});
-
-fs.mkdir(`${desktopPath}/html_${realDate}sn_app/js`, { recursive: true }, (err) => {
-  if (err) throw err;
-});
-
-let extName = "";
 const upload = multer({
   storage: multer.diskStorage({
-    // set a localstorage destination
+    // Set a localstorage destination
     destination: (req, file, cb) => {
       cb(null, `${desktopPath}/html_${realDate}sn_app/images`);
     },
     // convert a file name
     filename: (req, file, cb) => {
+      extName.push(path.extname(file.originalname));
       cb(null, "img0" + req.files.length + path.extname(file.originalname));
-      extName = path.extname(file.originalname);
     },
   }),
 });
 
 app.post("/upload", upload.array("image", 3), (req, res) => {
+  console.log(extName);
   // Generate the new HTML file with the image tag
+  const linkType = req.body.linkType;
+  const linkUrl = req.body.linkUrl;
   const newHtml = `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta
-        name="viewport"
-        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"
-      />
-      <meta name="format-detection" content="telephone=no" />
-      <title>이벤트</title>
-  
-      <link rel="stylesheet" href="./css/event.css" />
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    </script>
-    </head>
-    <body>
-      <div class="canvas">
-        <div class="container">
-          <div class="eventBox">
-            <div class="img_box">
-              <img src="./images/img01${extName}" alt="Uploaded Image" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </body>
-  </html>
-  `;
-
-  const newHtml2 = `
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -98,7 +76,7 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
       <script src="./js/link.js"></script>
       <script>
         $(document).ready(function () {
-          LinkSetting("link1", "BrowserOpen", "yes", "https://www.naver.com");
+          LinkSetting("link1", "${linkType}", "yes", "${linkUrl}");
         });
     </script>
     </head>
@@ -107,13 +85,13 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
         <div class="container">
           <div class="eventBox">
             <div class="img_box">
-              <img src="./images/img01${extName}" alt="Uploaded Image" />
+              <img src="./images/img01${extName[0]}" alt="Uploaded Image" />
 
               <a href="#none" id="link1">
-                <img src="./images/img02${extName}" alt="Uploaded Image" />
+                <img src="./images/img02${extName[1]}" alt="Uploaded Image" />
               </a>
               
-              <img src="./images/img03${extName}" alt="Uploaded Image" />
+              <img src="./images/img03${extName[2]}" alt="Uploaded Image" />
             </div>
           </div>
         </div>
@@ -225,7 +203,7 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
 
   // Write the new HTML file
 
-  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/index_app.html`, newHtml2, (err) => {
+  fs.writeFile(`${desktopPath}/html_${realDate}sn_app/index_app.html`, newHtml, (err) => {
     if (err) {
       console.err;
     } else {
