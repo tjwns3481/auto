@@ -231,6 +231,6 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
   });
 });
 
-app.listen(8080, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server started on port 8080");
 });
