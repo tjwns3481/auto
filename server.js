@@ -263,6 +263,9 @@ app.post("/upload", upload.array("image", 3), (req, res) => {
   //여기까지
 });
 
-app.listen(process.env.PORT, () => {
+// 운영
+// app.listen(process.env.PORT, () => {
+// 개발
+app.listen(8088, () => {
   console.log("Server started on port 8080");
 });
